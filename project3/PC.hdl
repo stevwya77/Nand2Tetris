@@ -25,7 +25,7 @@ CHIP PC {
     And(a=notRESET, b=notLOAD, out=notRESETANDLOAD);
     And(a=notRESETANDLOAD, b=inc, out=shouldINC);
 
-    Mux16(a=reg, b=regRESET, sel=reset, out=step1);
-    Mux16(a=step1, b=in, sel=shouldLOAD, out=step2);
-    Mux16(a=step2, b=regINC, sel=shouldINC, out=base);
+    Mux16(a=reg, b=regRESET, sel=reset, out=checkONE);
+    Mux16(a=checkONE, b=in, sel=shouldLOAD, out=checkTWO);
+    Mux16(a=checkTWO, b=regINC, sel=shouldINC, out=base);
 }
