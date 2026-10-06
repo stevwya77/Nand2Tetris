@@ -15,7 +15,17 @@ use parser::{Parser, A_INSTRUCTION, C_INSTRUCTION, L_INSTRUCTION};
 fn main() -> io::Result<()> {
     let mut line_parser = Parser::new();
     let mut manager = TableManager::new();
-    let program = File::open("Pong.asm")?;
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() != 2 {
+        eprintln!("usage: {} <file.asm>", args[0]);
+        std::process::exit(1);
+    }
+    let input_path = &args[1];
+    let output_path = match input_path.strip_suffix(".asm") {
+        Some(stem) => format!("{}.hack", stem),
+        None => format!("{}.hack", input_path),
+    };
+    let program = File::open(input_path)?;
     let mut reader = BufReader::new(program);
     let mut pass_line_num = 0;
 
@@ -70,13 +80,10 @@ fn main() -> io::Result<()> {
             C_INSTRUCTION => {
                 let dest = line_parser.dest().unwrap_or_default();
                 let d_code = code::bin_dest(&dest);
-                println!("Destination:{} Bin:{}", dest, d_code);
                 let comp = line_parser.comp().unwrap_or_default();
                 let c_code = code::bin_comp(&comp);
-                println!("Comp:{} Bin:{}", comp, c_code);
                 let jump = line_parser.jump().unwrap_or_default();
                 let j_code = code::bin_jump(&jump);
-                println!("Jump:{} Bin:{}", jump, j_code);
                 bin_output.push(format!("111{}{}{}", c_code, d_code, j_code));
             }
             _ => {}
@@ -85,9 +92,9 @@ fn main() -> io::Result<()> {
     }
 
     let join_and_sep = bin_output.join("\n");
-    let mut output_file = File::create("Pong.hack")?;
+    let mut output_file = File::create(&output_path)?;
     write!(output_file, "{}", join_and_sep)?;
 
-    println!("assembly write to hack file completed");
+    println!("wrote {}", output_path);
     Ok(())
 }
