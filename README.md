@@ -30,4 +30,4 @@ rustc -O hackassembler.rs -o hackassembler
 ./hackassembler path/to/Program.asm   # writes path/to/Program.hack
 ```
 
-The HDL chips run in the official Nand2Tetris hardware simulator.
+The HDL chips run in the official Nand2Tetris hardware simulator
